@@ -1,0 +1,6 @@
+{
+  "name": "Stormline",
+  "description": "Weather-driven rally racing simulator with 5 dynamic stages, vehicle tuning, and phone rotation controls.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
