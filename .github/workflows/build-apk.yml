@@ -33,45 +33,33 @@ jobs:
       - name: Grant Execute Permission for Gradlew
         run: chmod +x gradlew
 
-      - name: Prepare Signing Keystore
+      - name: Prepare Debug Keystore
         run: |
           if [ ! -f debug.keystore ]; then
             keytool -genkey -v -keystore debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US"
           fi
-          cp debug.keystore my-upload-key.jks
 
-      - name: Build APK with Gradle
-        env:
-          KEYSTORE_PATH: ${{ github.workspace }}/debug.keystore
-          STORE_PASSWORD: android
-          KEY_PASSWORD: android
+      - name: Build Debug APK with Gradle
         run: |
-          ./gradlew assembleDebug assembleRelease --stacktrace
+          ./gradlew assembleDebug --stacktrace
 
-      - name: Organize Output APK Files
-        run: |
-          mkdir -p output-apks
-          if [ -f app/build/outputs/apk/release/app-release.apk ]; then
-            cp app/build/outputs/apk/release/app-release.apk output-apks/Stormline-v1.0-release.apk
-          fi
-          if [ -f app/build/outputs/apk/debug/app-debug.apk ]; then
-            cp app/build/outputs/apk/debug/app-debug.apk output-apks/Stormline-v1.0-debug.apk
-            # Primary universal installable APK
-            cp app/build/outputs/apk/debug/app-debug.apk output-apks/Stormline.apk
-          fi
-          ls -la output-apks/
-
-      - name: Upload APK Artifact (GitHub Actions Downloads)
+      - name: Upload Debug APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Stormline-APK
-          path: output-apks/*.apk
+          name: app-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
           retention-days: 30
+
+      - name: Prepare Release Asset
+        run: |
+          mkdir -p release-apks
+          cp app/build/outputs/apk/debug/app-debug.apk release-apks/Stormline.apk
+          cp app/build/outputs/apk/debug/app-debug.apk release-apks/app-debug.apk
 
       - name: Attach APK to GitHub Release
         if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: output-apks/*.apk
+          files: release-apks/*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

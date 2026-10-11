@@ -24,7 +24,7 @@ You can download the APK anytime without creating a release:
 2. In the left sidebar, click **Build & Release Android APK**.
 3. Click on the latest workflow run (with the green checkmark ✔️).
 4. Scroll down to the bottom of the page to find the **Artifacts** section.
-5. Click on **`Stormline-APK`** — this will download a zip containing `Stormline.apk`!
+5. Click on **`app-debug`** — this downloads the installable `app-debug.apk` directly to your device!
 
 ---
 
