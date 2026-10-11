@@ -8,6 +8,11 @@ on:
   release:
     types: [ published, created ]
   workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release tag to attach APK to (optional, defaults to latest release if available)'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -43,23 +48,44 @@ jobs:
         run: |
           ./gradlew assembleDebug --stacktrace
 
-      - name: Upload Debug APK Artifact
+      - name: Prepare Study-AI.apk
+        run: |
+          if [ -f app/build/outputs/apk/debug/app-debug.apk ]; then
+            cp app/build/outputs/apk/debug/app-debug.apk Study-AI.apk
+            ls -lh Study-AI.apk
+          else
+            echo "Error: app-debug.apk was not found!" >&2
+            exit 1
+          fi
+
+      - name: Upload Study-AI.apk as GitHub Actions Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: Study-AI.apk
+          path: Study-AI.apk
           retention-days: 30
 
-      - name: Prepare Release Asset
-        run: |
-          mkdir -p release-apks
-          cp app/build/outputs/apk/debug/app-debug.apk release-apks/Stormline.apk
-          cp app/build/outputs/apk/debug/app-debug.apk release-apks/app-debug.apk
-
-      - name: Attach APK to GitHub Release
+      - name: Attach Study-AI.apk to GitHub Release (Release Event)
         if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: release-apks/*.apk
+          files: Study-AI.apk
+          tag_name: ${{ github.event.release.tag_name || github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Attach Study-AI.apk to Release (Manual Workflow Dispatch)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          TARGET_TAG="${{ inputs.tag_name }}"
+          if [ -z "$TARGET_TAG" ]; then
+            TARGET_TAG=$(gh release view --json tagName -q .tagName 2>/dev/null || echo "")
+          fi
+          if [ -n "$TARGET_TAG" ]; then
+            echo "Attaching Study-AI.apk to release: $TARGET_TAG"
+            gh release upload "$TARGET_TAG" Study-AI.apk --clobber
+          else
+            echo "No existing release found to attach to. APK is saved as a workflow artifact."
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

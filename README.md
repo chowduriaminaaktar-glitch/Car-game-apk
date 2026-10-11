@@ -12,9 +12,9 @@ If you pushed this project to GitHub or created a GitHub Release, here is how to
 1. In your GitHub repository, look at the right sidebar and click **Releases** (or navigate to `https://github.com/YOUR_USERNAME/YOUR_REPO/releases`).
 2. Click on the latest release (e.g. `v1.0`).
 3. Scroll down to the **Assets** section.
-4. Click on **`Stormline.apk`** to download it directly to your phone or computer!
+4. Click on **`Study-AI.apk`** to download it directly to your phone or computer!
 
-> 💡 **Note**: When you publish a release or create a new tag on GitHub, GitHub Actions will automatically compile the APK and attach `Stormline.apk` to the Assets list within 2–3 minutes.
+> 💡 **Note**: When you publish a release or create a new tag on GitHub, GitHub Actions will automatically compile the APK and attach `Study-AI.apk` alongside your existing release assets within 2–3 minutes.
 
 ---
 
@@ -24,7 +24,7 @@ You can download the APK anytime without creating a release:
 2. In the left sidebar, click **Build & Release Android APK**.
 3. Click on the latest workflow run (with the green checkmark ✔️).
 4. Scroll down to the bottom of the page to find the **Artifacts** section.
-5. Click on **`app-debug`** — this downloads the installable `app-debug.apk` directly to your device!
+5. Click on **`Study-AI.apk`** — this downloads the installable APK directly to your device!
 
 ---
 
